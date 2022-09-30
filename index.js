@@ -13,15 +13,15 @@ app.use(express.json());
 app.use(UserRouter);
 app.use(AuthRouter);
 
-// Destructuring config file for access port info.
+// Destructuring config file for access app info.
 const {
-  port: { name, message },
   clusters: {
     users: { url },
   },
 } = config;
+const port = process.env.PROJECT_PORT || 3000;
 
 connectMongo(url);
-app.listen(name || 3000, () => {
-  console.log(message);
+app.listen(port, () => {
+  console.log(`Server has been listened on port ${port}`);
 });

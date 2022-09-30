@@ -1,0 +1,11 @@
+{
+  "tokens": {
+    "ACCESS_TOKEN": "1ac0f958bad5a0ae2c8d601298b31c15c6728ee9b6e2ec5ddfb7effcb7ce34a1ac68497adbdfd7179ac9b95b234e28a662ffd33d1509f620ff17754c65099356",
+    "REFRESH_TOKEN": "5edfcd739bf173bb7f70b89c08a5a76c91b05e1974e276beec45f5186c2d37642bd390a368aaa253797460f4f8b4bf39b3398645e348b20524b1ddf799998b8b"
+  },
+  "clusters": {
+    "users": {
+      "url": "mongodb+srv://users:users@users.jsr6zv4.mongodb.net/?retryWrites=true&w=majority"
+    }
+  }
+}
