@@ -10,8 +10,8 @@ const app = express();
 
 // MiddleWares.
 app.use(express.json());
-app.use(UserRouter);
 app.use(AuthRouter);
+app.use(UserRouter);
 
 // Destructuring config file for access app info.
 const {

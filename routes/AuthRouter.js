@@ -1,54 +1,16 @@
 import express from "express";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import config from "../config.json" assert { type: "json" };
-import UserModel from "../models/UserModel.js";
-import {
-  INCORRECT_PASSWORD,
-  SUCCESSFULLY_LOGED,
-  SUCCESSFULLY_REGISTERED,
-} from "../const/Messages.js";
-import {
-  checkAuthenticated,
-  checkValidations,
-} from "../middlewares/UserMiddleWare.js";
+import UserMiddleWare from "../middlewares/AuthMiddleWare.js";
+import AuthController from "../controllers/AuthController.js";
 
-const AuthRouter = express();
-const {
-  tokens: { ACCESS_TOKEN },
-} = config;
+const router = express();
 
-const postSignUp = async (req, res) => {
-  const { email, password, username, location } = req.body;
-  const accessToken = jwt.sign({ email, password }, ACCESS_TOKEN);
-  const user = new UserModel({
-    email,
-    username,
-    password: await bcrypt.hash(password, 10),
-    location,
-    token: accessToken,
-  });
+router.post(
+  "/sign-up",
+  UserMiddleWare.checkAuthenticated,
+  UserMiddleWare.checkValidations,
+  AuthController.register
+);
 
-  user.save();
-  res.json({ message: SUCCESSFULLY_REGISTERED });
-};
+router.post("/sign-in", UserMiddleWare.checkValidations, AuthController.login);
 
-AuthRouter.post("/sign-up", checkAuthenticated, checkValidations, postSignUp);
-
-const postSignIn = async (req, res) => {
-  const { email, password } = req.body;
-  const [user] = await UserModel.find({ email });
-
-  if (!user) return res.sendStatus(403);
-  if (!(await bcrypt.compare(password, user.password)))
-    return res.json({ message: INCORRECT_PASSWORD });
-
-  res.json({
-    userId: user.id,
-    message: SUCCESSFULLY_LOGED,
-  });
-};
-
-AuthRouter.post("/sign-in", checkValidations, postSignIn);
-
-export default AuthRouter;
+export default router;

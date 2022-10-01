@@ -1,22 +1,17 @@
-import {
-  emailValidation,
-  nameValidation,
-  passwordValidation,
-  hexValidation,
-} from "../validations/UserValidation.js";
+import { NOT_FOUND_ACCOUNT } from "../const/Messages.js";
+import UserModel from "../models/UserModel.js";
+import AuthController from "./AuthController.js";
 
-export const controlEmailValidation = (email) => {
-  return email.match(emailValidation);
+const getUser = async (req, res) => {
+  const id = req.params.id;
+  const condition =
+    !AuthController.controlHexValidation(id) || id.length !== 24;
+  if (condition) return res.sendStatus(404);
+  const user = await UserModel.findById(id);
+  if (!user) return res.json({ message: NOT_FOUND_ACCOUNT });
+  res.json(user);
 };
 
-export const controlPasswordValidation = (password) => {
-  return password.match(passwordValidation);
-};
-
-export const controlUserNameValidation = (name) => {
-  return name.match(nameValidation);
-};
-
-export const controlHexValidation = (hexId) => {
-  return hexId.match(hexValidation);
+export default {
+  getUser,
 };
