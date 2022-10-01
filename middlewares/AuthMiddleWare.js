@@ -16,11 +16,15 @@ const checkValidations = (req, res, next) => {
 };
 
 const checkAuthenticated = async (req, res, next) => {
-  const { email } = req.body;
-  const [checkUser] = await UserModel.find({ email });
+  try {
+    const { email } = req.body;
+    const [checkUser] = await UserModel.find({ email });
 
-  if (checkUser) return res.json({ message: AUTHENTICATED });
-  next();
+    if (checkUser) return res.json({ message: AUTHENTICATED });
+    next();
+  } catch (err) {
+    console.log(err);
+  }
 };
 
 export default {

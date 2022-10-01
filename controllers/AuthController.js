@@ -19,32 +19,40 @@ const {
 } = config;
 
 const register = async (req, res) => {
-  const { email, password, username, location } = req.body;
-  const accessToken = jwt.sign({ email, password }, ACCESS_TOKEN);
-  const user = new UserModel({
-    email,
-    username,
-    password: await bcrypt.hash(password, 10),
-    location,
-    token: accessToken,
-  });
+  try {
+    const { email, password, username, location } = req.body;
+    const accessToken = jwt.sign({ email, password }, ACCESS_TOKEN);
+    const user = new UserModel({
+      email,
+      username,
+      password: await bcrypt.hash(password, 10),
+      location,
+      token: accessToken,
+    });
 
-  user.save();
-  res.json({ message: SUCCESSFULLY_REGISTERED });
+    user.save();
+    res.json({ message: SUCCESSFULLY_REGISTERED });
+  } catch (err) {
+    console.log(err);
+  }
 };
 
 const login = async (req, res) => {
-  const { email, password } = req.body;
-  const [user] = await UserModel.find({ email });
+  try {
+    const { email, password } = req.body;
+    const [user] = await UserModel.find({ email });
 
-  if (!user) return res.sendStatus(403);
-  if (!(await bcrypt.compare(password, user.password)))
-    return res.json({ message: INCORRECT_PASSWORD });
+    if (!user) return res.sendStatus(403);
+    if (!(await bcrypt.compare(password, user.password)))
+      return res.json({ message: INCORRECT_PASSWORD });
 
-  res.json({
-    userId: user.id,
-    message: SUCCESSFULLY_LOGED,
-  });
+    res.json({
+      userId: user.id,
+      message: SUCCESSFULLY_LOGED,
+    });
+  } catch (err) {
+    console.log(err);
+  }
 };
 
 // Validations.
