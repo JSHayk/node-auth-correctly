@@ -1,18 +1,14 @@
+// node_modules imports.
 import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
+// My imports.
+import config from "../config/config.json" assert { type: "json" };
 import {
   INCORRECT_PASSWORD,
   SUCCESSFULLY_LOGED,
   SUCCESSFULLY_REGISTERED,
 } from "../const/Messages.js";
-import config from "../config.json" assert { type: "json" };
-import UserModel from "../models/UserModel.js";
-import bcrypt from "bcrypt";
-import {
-  emailValidation,
-  nameValidation,
-  passwordValidation,
-  hexValidation,
-} from "../validations/AuthValidation.js";
+import userModel from "../db/models/user.model.js";
 
 const {
   tokens: { ACCESS_TOKEN },
@@ -22,7 +18,7 @@ const register = async (req, res) => {
   try {
     const { email, password, username, location } = req.body;
     const accessToken = jwt.sign({ email, password }, ACCESS_TOKEN);
-    const user = new UserModel({
+    const user = new userModel({
       email,
       username,
       password: await bcrypt.hash(password, 10),
@@ -40,7 +36,7 @@ const register = async (req, res) => {
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const [user] = await UserModel.find({ email });
+    const [user] = await userModel.find({ email });
 
     if (!user) return res.sendStatus(403);
     if (!(await bcrypt.compare(password, user.password)))
@@ -55,30 +51,7 @@ const login = async (req, res) => {
   }
 };
 
-// Validations.
-
-const controlEmailValidation = (email) => {
-  return email.match(emailValidation);
-};
-
-const controlPasswordValidation = (password) => {
-  return password.match(passwordValidation);
-};
-
-const controlUserNameValidation = (name) => {
-  return name.match(nameValidation);
-};
-
-const controlHexValidation = (hexId) => {
-  return hexId.match(hexValidation);
-};
-
 export default {
   register,
   login,
-  controlEmailValidation,
-  controlEmailValidation,
-  controlHexValidation,
-  controlPasswordValidation,
-  controlUserNameValidation,
 };
